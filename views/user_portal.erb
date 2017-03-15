@@ -1,17 +1,159 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12">
+      <h1><%= current_user.first_name %> <%= current_user.last_name %></h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Bookings</h1>
+      <h3>Confirmed Bookings</h3>
+      <table class="table table-bordered">
+        <thead>
+          <th>Booking ID</th>
+          <th>Name</th>
+          <th>PAX</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Delete Booking</th>
+        </thead>
+        <% @booking.each do |book| %>
+          <% if book.confirmation != "false" %>
+            <tr>
+              <td><%= book.id %></td>
+              <td><%= book.restaurant.restaurant_name %></td>
+              <td><%= book.person %></td>
+              <td><%= book.booking_date %></td>
+              <td><%= book.booking_time %></td>
+              <td><a href="/delete/booking/<%= book.id %>">Delete</a></td>
+            </tr>
+          <% end %>
+        <% end %>
+      </table>
+      <h3>Unconfirmed Bookings</h3>
+      <table class="table table-bordered">
+        <thead>
+          <th>Booking ID</th>
+          <th>Name</th>
+          <th>PAX</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Delete Booking</th>
+        </thead>
+        <% @booking.each do |book| %>
+          <% if book.confirmation == "false" %>
+            <tr>
+              <td><%= book.id %></td>
+              <td><%= book.restaurant.restaurant_name %></td>
+              <td><%= book.person %></td>
+              <td><%= book.booking_date %></td>
+              <td><%= book.booking_time %></td>
+              <td><a href="/delete/booking/<%= book.id %>">Delete</a></td>
+            </tr>
+          <% end %>
+        <% end %>
+      </table>
+      <h3>New Booking</h3>
+      <form class="" action="/booking/create" method="post">
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Restaurant Name</label>
+            <input type="text" class="form-control" name="name" placeholder="Name">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Persons</label>
+            <input type="number" class="form-control" name="persons" placeholder="Number">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Date</label>
+            <input type="text" class="form-control" name="date" placeholder="Number">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Time</label>
+            <select class="selectpicker" name="time">
+                <option value="9:00">9:00</option>
+                <option value="9:30">9:30</option>
+                <option value="10:00">10:00</option>
+                <option value="10:30">10:30</option>
+                <option value="11:00">11:00</option>
+                <option value="11:30">11:30</option>
+                <option value="12:00">12:00</option>
+                <option value="12:30">12:30</option>
+                <option value="13:00">13:00</option>
+                <option value="13:30">13:30</option>
+                <option value="14:00">14:00</option>
+                <option value="14:30">14:30</option>
+                <option value="15:00">15:00</option>
+                <option value="18:00">18:00</option>
+                <option value="18:30">18:30</option>
+                <option value="19:00">19:00</option>
+                <option value="19:30">19:30</option>
+                <option value="20:00">20:00</option>
+                <option value="20:30">20:30</option>
+                <option value="21:00">21:00</option>
+            </select>
+          </div>
+          <button class="btn btn-default">Book Now</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
       <h1>Invitations</h1>
+      <table class="table table-bordered">
+        <thead>
+          <th>Invite ID</th>
+          <th>Restaurant Name</th>
+          <th>Expiry</th>
+          <th>Invite Comment</th>
+          <th>Claim Offer</th>
+          <th>Delete Invite</th>
+        </thead>
+        <% @invitation.each do |invite| %>
+          <tr>
+            <td><%= invite.id %></td>
+            <td><%= invite.restaurant.restaurant_name %></td>
+            <td><%= invite.time_end %></td>
+            <td><%= invite.invite %></td>
+            <% if invite.discount_code.claim == 'false' %>
+              <td><a href="/claim/invitation/<%= invite.discount_code.id %>">Claim Now</a></td>
+            <% else %>
+              <td><%= invite.discount_code.code %></td>
+            <% end %>
+            <td><a href="/delete/invitation/<%= invite.id %>">Delete</a></td>
+          </tr>
+        <% end %>
+      </table>
     </div>
   </div>
   <div class="row">
     <div class="col-md-12">
-      <h1>Wishlist</h1>
-    </div>
-  </div>
-  <div class="row">
-    <div class="col-md-12">
-      <h1>Comments</h1>
+      <h1>Comments Provided</h1>
+      <table>
+        <table class="table table-bordered">
+          <thead>
+            <th>Restaurant Name</th>
+            <th>Comment</th>
+            <th>Rating</th>
+            <th>Delete Comment</th>
+          </thead>
+          <% @comment.each do |comment| %>
+            <tr>
+              <td><%= comment.restaurant.restaurant_name %></td>
+              <td><%= comment.body %></td>
+              <td><%= comment.rating %>/10</td>
+              <td><a href="/delete/comment/<%= comment.id %>">Delete</a></td>
+            </tr>
+          <% end %>
+        </table>
+      </table>
     </div>
   </div>
 </div>

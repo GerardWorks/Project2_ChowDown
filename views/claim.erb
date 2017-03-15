@@ -1,0 +1,76 @@
+<div class="container">
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="col-md-4">
+        <h1>Review of</h1>
+        <h1><%= @restaurant_name %></h1>
+      </div>
+      <div class="col-md-4">
+      </div>
+    </div>
+    <form class="" action="/comment/submit/<%= @discount_id %>" method="post">
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="col-md-4">
+        <h2>Customer Service</h2>
+        <select class="selectpicker" name="service">
+          <% for i in 0..10 %>
+            <option value=<%=i%>><%= i %></option>
+          <% end %>
+        </select>
+      </div>
+      <div class="col-md-4">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="col-md-4">
+        <h2>Food Quality</h2>
+        <select class="selectpicker" name="quality">
+          <% for i in 0..10 %>
+            <option value=<%=i%>><%= i %></option>
+          <% end %>
+        </select>
+      </div>
+      <div class="col-md-4">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="col-md-4">
+        <h2>Environment</h2>
+        <select class="selectpicker" name="environment">
+          <% for i in 0..10 %>
+            <option value=<%=i%>><%= i %></option>
+          <% end %>
+        </select>
+      </div>
+      <div class="col-md-4">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="col-md-4">
+        <h2>Comments</h2>
+        <input type="text" class="form-control" name="body" value="" placeholder="Comments">
+      </div>
+      <div class="col-md-4">
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+      </div>
+      <div class="col-md-4">
+        <p></p>
+        <button class="btn btn-default">Submit</button>
+      </div>
+      <div class="col-md-4">
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,5 +1,6 @@
 class DiscountCode < ActiveRecord::Base
   belongs_to :restaurant
   belongs_to :user
-  has_many :bookings
+  belongs_to :booking
+  has_many :invitations
 end

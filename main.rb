@@ -33,10 +33,8 @@ helpers do
     !!current_user
   end
 
-  def random_user
-    range_users = User.last.id - User.first.id
-    random_user = rand(0..range_users) + User.first.id
-    found_user = User.find_by(id: random_user)
+  def random_user location
+    found_user = User.where(city: location).sample
 
     if found_user == nil
       return random_user
@@ -46,12 +44,16 @@ helpers do
   end
 
   def invitations invitation_comment,owner_id,days_valid,date
+    owner_location = Restaurant.find(owner_id).city
     invite = Invitation.new
     invite.invite = invitation_comment
-    invite.user_id = random_user
+    invite.user_id = random_user(owner_location)
     invite.restaurant_id = owner_id
     invite.time_start = date[0].to_s + "/" + date[1].to_s + "/" + date[2].to_s
     invite.time_end = (date[0]+days_valid).to_s + "/" + date[1].to_s + "/" + date[2].to_s
+    invite.save
+    discount = discount_generator(invite.user_id,invite.restaurant_id)
+    invite.discount_code_id = discount.id
     invite.save
   end
 
@@ -63,6 +65,83 @@ helpers do
     return date
   end
 
+  def restaurant_db_search name
+    array_name = name.split(" ")
+    array_caps = array_name.map{|x| x.capitalize}.join(" ")
+    find = Restaurant.find_by(restaurant_name: array_caps)
+    return find
+  end
+
+  def discount_generator user_id,rest_id
+    discount = DiscountCode.new
+    discount.restaurant_id = rest_id
+    discount.user_id = user_id
+    discount.code = rand(123456..654321)
+    discount.claim = "false"
+    discount.save
+    return discount
+  end
+
+  def booking_create user_id,rest_id,person,date,time
+    discount = discount_generator(user_id,rest_id)
+    booking = Booking.new
+    booking.restaurant_id = rest_id
+    booking.user_id = user_id
+    booking.code_id = discount.id
+    booking.booking_date = date
+    booking.booking_time = time
+    booking.confirmation = "false"
+    booking.person = person
+    booking.save
+  end
+
+  def rating_average score1,score2,score3
+    x = score1.to_i
+    y = score2.to_i
+    z = score3.to_i
+    average_score = (x + y + z)/3.0
+    return average_score
+  end
+
+  def create_comment (discount_id,user_id,restaurant_id,rating,body)
+    comment = Comment.new
+    comment.body = body
+    comment.user_id = user_id
+    comment.restaurant_id = restaurant_id
+    comment.rating = rating
+    comment.save
+    discount_change = DiscountCode.find(discount_id)
+    discount_change.claim = 'true'
+    discount_change.save
+  end
+
+  def delete_old_invites invite_id
+      file_invite = Invitation.find(invite_id)
+      file_discount = file_invite.discount_code
+      file_discount.destroy
+      file_invite.destroy
+
+      if current_user_restaurant != nil
+        redirect '/restaurant/portal'
+      elsif current_user != nil
+        redirect '/user/portal'
+      else
+        erb :index
+      end
+  end
+
+  def check_invites invite_id
+    file = Invitation.find(invite_id)
+    invite_time = file.time_end.split("/").map{|x| x.to_i}
+    today_date = date_now
+
+    if invite_time[0] < today_date[0] && invite_time[1] <= today_date[1] && invite_time[2] <= today_date[2]
+      return delete_old_invites(invite_id)
+    else
+      return
+    end
+  end
+
   def geolocation
     location = HTTParty.post("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDymhDvUDW4UO33LK-BRymut6RoM_pG4eI")
     lat = location['location']['lat']
@@ -72,7 +151,6 @@ helpers do
 
   def search (location_array, radius = 1000)
     search = HTTParty.post("https://developers.zomato.com/api/v2.1/search?lat=#{location_array[0]}&lon=#{location_array[1]}&radius=#{radius}", :headers => {"X-Zomato-API-Key" => "f4909ceb3554accebfc6de98eeac1b7a"})
-      # @search["restaurants"][0]["restaurant"]["name"] this gives the restaurant name
     return @search.body
   end
 
@@ -93,7 +171,12 @@ get '/' do
 end
 
 get '/result/:id' do
-  @something = params[:id]
+  string = params[:id]
+  results = general_search(string)
+  @restaurants = results["restaurants"]
+  # ["restaurant"]["name"]
+  binding.pry
+
 
   erb :search_result
 end
@@ -115,10 +198,18 @@ get '/registration' do
 end
 
 get '/restaurant/portal' do
+  @invitation = Invitation.where(restaurant_id: current_user_restaurant)
+  @comment = Comment.where(restaurant_id: current_user_restaurant)
+  @booking = Booking.where(restaurant_id: current_user_restaurant)
   erb :restaurant_portal
 end
 
 get '/user/portal' do
+  @open = 900
+  @close = 2100
+  @invitation = Invitation.where(user_id: current_user)
+  @comment = Comment.where(user_id: current_user)
+  @booking = Booking.where(user_id: current_user)
   erb :user_portal
 end
 
@@ -152,10 +243,11 @@ end
 
 post '/chowdown' do
   user_search = params[:search_input]
-  input_array = user_search.split(" ")
-  query = input_array.join("&")
+  remove_non_alpha_chars = user_search.downcase.gsub(/[^a-z0-9\s]/i, '')
+  input_string = remove_non_alpha_chars.gsub(' ','%20')
+
   if user_search != nil && user_search != ""
-    redirect "/result/#{query}"
+    redirect "/result/#{input_string}"
   else
     erb :index
   end
@@ -213,16 +305,80 @@ post '/invitations' do
   owner_id = current_user_restaurant.id
   date = date_now
 
-  for i in 0..number_of_invites
+  for i in 0..number_of_invites - 1
     invitations(invitation_comment,owner_id,days_valid,date)
   end
   redirect '/restaurant/portal'
 end
 
-post '/delete/comment' do
-
+get '/delete/comment/:id' do
+  file = Comment.find(params[:id])
+  file.destroy
+  if current_user_restaurant != nil
+    redirect '/restaurant/portal'
+  elsif current_user != nil
+    redirect '/user/portal'
+  else
+    erb :index
+  end
 end
 
-post '/delete/invitation' do
+get '/delete/invitation/:id' do
+    file = Invitation.find(params[:id])
+    file.destroy
+    if current_user_restaurant != nil
+      redirect '/restaurant/portal'
+    elsif current_user != nil
+      redirect '/user/portal'
+    else
+      erb :index
+    end
+end
 
+get '/delete/booking/:id' do
+  file = Booking.find(params[:id])
+  if current_user_restaurant != nil
+    file.destroy
+    redirect '/restaurant/portal'
+  elsif current_user != nil
+    file.destroy
+    redirect '/user/portal'
+  else
+    erb :index
+  end
+end
+
+get "/approve/booking/:id" do
+  file = Booking.find(params[:id])
+  file.confirmation = "true"
+  file.save
+  redirect '/restaurant/portal'
+end
+
+post '/booking/create' do
+  find_restaurant = restaurant_db_search(params[:name])
+  if find_restaurant != nil
+    booking_create(current_user.id,find_restaurant.id,params[:persons],params[:date],params[:time])
+    redirect '/user/portal'
+  else
+    redirect '/user/portal'
+  end
+end
+
+get '/claim/invitation/:id' do
+  find = DiscountCode.find(params[:id])
+  @discount_id = params[:id]
+  @restaurant_id = find.restaurant.id
+  @restaurant_name = find.restaurant.restaurant_name
+  erb :claim
+end
+
+post '/comment/submit/:id' do
+  discount_object = DiscountCode.find(params[:id])
+  restaurant_id = discount_object.restaurant_id
+  user_id = discount_object.user_id
+  rating = rating_average(params[:service],params[:quality],params[:environment])
+  body = params[:body]
+  create_comment(params[:id],user_id,restaurant_id,rating,body)
+  redirect '/user/portal'
 end

@@ -1,20 +1,89 @@
 <div class="container">
   <div class="row">
     <div class="col-md-12">
+      <h1><%= current_user_restaurant.restaurant_name %></h1>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Bookings</h1>
+      <h3>Confirmed Bookings</h3>
+      <table class="table table-bordered">
+        <thead>
+          <th>Booking ID</th>
+          <th>Name</th>
+          <th>Phone Number</th>
+          <th>PAX</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Delete Booking</th>
+        </thead>
+        <% @booking.each do |book| %>
+          <% if book.confirmation != "false" %>
+            <tr>
+              <td><%= book.id %></td>
+              <td><%= book.user.first_name %> <%= book.user.last_name %></td>
+              <td><%= book.user.mobile %></td>
+              <td><%= book.person %></td>
+              <td><%= book.booking_date %></td>
+              <td><%= book.booking_time %></td>
+              <td><a href="/delete/booking/<%= book.id %>">Delete</a></td>
+            </tr>
+          <% end %>
+        <% end %>
+      </table>
+      <h3>Unconfirmed Bookings</h3>
+      <table class="table table-bordered">
+        <thead>
+          <th>Booking ID</th>
+          <th>Name</th>
+          <th>Phone Number</th>
+          <th>PAX</th>
+          <th>Date</th>
+          <th>Time</th>
+          <th>Approve Booking</th>
+          <th>Reject Booking</th>
+        </thead>
+        <% @booking.each do |book| %>
+          <% if book.confirmation == "false" %>
+            <tr>
+              <td><%= book.id %></td>
+              <td><%= book.user.first_name %> <%= book.user.last_name %></td>
+              <td><%= book.user.mobile %></td>
+              <td><%= book.person %></td>
+              <td><%= book.booking_date %></td>
+              <td><%= book.booking_time %></td>
+              <td><a href="/approve/booking/<%= book.id %>">Approve Booking</a></td>
+              <td><a href="/delete/booking/<%= book.id %>">Reject Booking</a></td>
+            </tr>
+          <% end %>
+        <% end %>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
       <h1>Invitations Sent</h1>
       <table class="table table-bordered">
         <thead>
-          <th>Number</th>
+          <th>Invite ID</th>
           <th>Name</th>
           <th>Expiry</th>
+          <th>Invite Comment</th>
+          <th>Promo Code</th>
           <th>Delete Invite</th>
         </thead>
-        <tr>
-          <td>1</td>
-          <td>Gerard Ho</td>
-          <td>20/03/2017</td>
-          <td><a href="/delete/invitation">Delete</a></td>
-        </tr>
+        <% @invitation.each do |invite| %>
+        <% check_invites(invite.id) %>
+          <tr>
+            <td><%= invite.id %></td>
+            <td><%= invite.user.first_name %> <%= invite.user.last_name %></td>
+            <td><%= invite.time_end %></td>
+            <td><%= invite.invite %></td>
+            <td><%= invite.discount_code.code %></td>
+            <td><a href="/delete/invitation/<%= invite.id %>">Delete</a></td>
+          </tr>
+        <% end %>
       </table>
     </div>
   </div>
@@ -57,12 +126,14 @@
             <th>Name</th>
             <th>Delete Comment</th>
           </thead>
-          <tr>
-            <td>This is a really good restaurant</td>
-            <td>8/10</td>
-            <td>Gerard</td>
-            <td><a href="/delete/comment">Delete</a></td>
-          </tr>
+          <% @comment.each do |comment| %>
+            <tr>
+              <td><%= comment.body %></td>
+              <td><%= comment.rating %>/10</td>
+              <td><%= comment.user.first_name %> <%= comment.user.last_name %></td>
+              <td><a href="/delete/comment/<%= comment.id %>">Delete</a></td>
+            </tr>
+          <% end %>
         </table>
       </table>
     </div>

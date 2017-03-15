@@ -50,16 +50,17 @@
             <% if logged_in? %>
               <div class="input-group">
                 <span>Logged in as: <%= current_user.first_name %> <%= current_user.last_name %></span>
-                  <input type="hidden" name="_method" value="delete">
-                  <button class="btn btn-default">Logout</button>
+                <input type="hidden" name="_method" value="delete">
+                <button class="btn btn-default">Logout</button>
               </div>
             </form>
             <% elsif logged_in_restaurant? %>
               <div class="input-group">
                 <span>Logged in as: <%= current_user_restaurant.first_name %> <%= current_user_restaurant.last_name %></span>
-                  <input type="hidden" name="_method" value="delete">
-                  <button class="btn btn-default">Logout</button>
+                <input type="hidden" name="_method" value="delete">
+                <button class="btn btn-default">Logout</button>
               </div>
+            </form>
             <% else %>
               <div class="input-group">
                 <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
