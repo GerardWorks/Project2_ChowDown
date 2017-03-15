@@ -5,11 +5,89 @@
     <title>Chow Down</title>
     <link rel='stylesheet' href='/stylesheets/bootstrap.css'>
     <link rel='stylesheet' href='/stylesheets/main.css'>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/css/bootstrap-select.min.css">
   </head>
   <body>
+    <nav class="navbar navbar-default navbar-static-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-menu-items">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a href="/">Chow Down</a>
+        </div>
+        <div class="collapse navbar-collapse" id="navbar-menu-items">
+          <ul class="nav navbar-nav">
+            <li class="active"><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Cuisines <span class="caret"></span></a>
+              <ul class="dropdown-menu">
+                <li><a href="#">Chinese</a></li>
+                <li><a href="#">Western</a></li>
+                <li><a href="#">Italian</a></li>
+                <li><a href="#">Lebanese</a></li>
+              </ul>
+            </li>
+            <% if logged_in_restaurant? %>
+              <li><a href="/restaurant/portal">Restaurant Portal</a></li>
+            <% end %>
+            <% if logged_in? %>
+              <li><a href="/user/portal">User Portal</a></li>
+            <% end %>
+          </ul> <!-- navigation on the left -->
+
+          <% if !logged_in? && !logged_in_restaurant? %>
+            <form class="navbar-form navbar-right" action="/registration" method="get">
+              <button class="btn btn-default">Register</button>
+            </form>
+          <% end %>
+
+          <form class="navbar-form navbar-right" action="/session" method="post"> <!-- login form on the right-->
+            <% if logged_in? %>
+              <div class="input-group">
+                <span>Logged in as: <%= current_user.first_name %> <%= current_user.last_name %></span>
+                  <input type="hidden" name="_method" value="delete">
+                  <button class="btn btn-default">Logout</button>
+              </div>
+            </form>
+            <% elsif logged_in_restaurant? %>
+              <div class="input-group">
+                <span>Logged in as: <%= current_user_restaurant.first_name %> <%= current_user_restaurant.last_name %></span>
+                  <input type="hidden" name="_method" value="delete">
+                  <button class="btn btn-default">Logout</button>
+              </div>
+            <% else %>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-envelope"></i></span>
+                <input type="email" class="form-control" name="email" value="" placeholder="Email" >
+              </div>
+              <div class="input-group">
+                <span class="input-group-addon"><i class="glyphicon glyphicon-star"></i></span>
+                <input type="password" class="form-control" name="password" value="" placeholder="Password">
+              </div>
+              <div class="input-group">
+                <select class="selectpicker" name="selector">
+                  <option value="user">User</option>
+                  <option value="restaurant">Restaurant Owner</option>
+                </select>
+              </div>
+              <button class="btn btn-default">Login</button>
+          </form>
+
+
+          <% end %>
+        </div> <!--menu collapse end -->
+      </div> <!--container end -->
+    </nav> <!-- nav bar end -->
 
     <%= yield %>
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.2/js/bootstrap-select.min.js"></script>
     <script type="text/javascript" src='/javascripts/bootstrap.js'></script>
   </body>
 </html>

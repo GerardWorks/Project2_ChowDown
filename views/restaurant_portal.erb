@@ -1,0 +1,70 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Invitations Sent</h1>
+      <table class="table table-bordered">
+        <thead>
+          <th>Number</th>
+          <th>Name</th>
+          <th>Expiry</th>
+          <th>Delete Invite</th>
+        </thead>
+        <tr>
+          <td>1</td>
+          <td>Gerard Ho</td>
+          <td>20/03/2017</td>
+          <td><a href="/delete/invitation">Delete</a></td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Invites</h1>
+      <p><strong>Note:</strong> Invitations will be sent randomly to individuals in your region</p>
+      <p>We suggest providing an incentive such as discounts, food trialing or something creative to bring in customers you have invited.</p>
+      <form class="" action="/invitations" method="post">
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Number of invites</label>
+            <input type="number" class="form-control" name="num_invites" placeholder="Number">
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="form-group">
+            <label>Invitation Days Valid</label>
+            <input type="number" class="form-control" name="days_valid" placeholder="Number">
+          </div>
+        </div>
+        <div class="col-md-6">
+          <div class="form-group">
+            <label>Invitation Comments</label>
+            <input type="text" class="form-control" name="body" placeholder="Invitation Comments">
+          </div>
+          <button class="btn btn-default">Invite</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-12">
+      <h1>Comments</h1>
+      <table>
+        <table class="table table-bordered">
+          <thead>
+            <th>Comment</th>
+            <th>Rating</th>
+            <th>Name</th>
+            <th>Delete Comment</th>
+          </thead>
+          <tr>
+            <td>This is a really good restaurant</td>
+            <td>8/10</td>
+            <td>Gerard</td>
+            <td><a href="/delete/comment">Delete</a></td>
+          </tr>
+        </table>
+      </table>
+    </div>
+  </div>
+</div>
