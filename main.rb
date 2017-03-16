@@ -1,6 +1,6 @@
-# require 'pry'
+require 'pry'
 require 'sinatra'
-# require 'sinatra/reloader'
+require 'sinatra/reloader'
 require 'pg'
 require 'httparty'
 require_relative 'database_config'
@@ -157,12 +157,12 @@ helpers do
     end
   end
 
-  def geolocation
-    location = HTTParty.post("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDymhDvUDW4UO33LK-BRymut6RoM_pG4eI")
-    lat = location['location']['lat']
-    long = location['location']['lng']
-    return [lat,long]
-  end
+  # def geolocation
+  #   location = HTTParty.post("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDymhDvUDW4UO33LK-BRymut6RoM_pG4eI")
+  #   lat = location['location']['lat']
+  #   long = location['location']['lng']
+  #   return [lat,long]
+  # end
 
   def search (query, location_array, radius = 2000)
     search = HTTParty.post("https://developers.zomato.com/api/v2.1/search?q=#{query}&lat=#{location_array[0]}&lon=#{location_array[1]}&radius=#{radius}", :headers => {"X-Zomato-API-Key" => "f4909ceb3554accebfc6de98eeac1b7a"})
@@ -188,13 +188,16 @@ get '/' do
 end
 
 get '/result/:id' do
-  @string = params[:id]
-  location = geolocation
-  if @string == 'chowdown'
+  @array = params[:id].split("&&")
+  lat = @array[1].to_f.round(4).to_s
+  long = @array[2].to_f.round(4).to_s
+  # binding.pry
+  location = [lat,long]
+  if @array[0] == 'chowdown'
     results = search_my_area(location)
     @restaurants = results["restaurants"]
   else
-    results = search(@string,location)
+    results = search(@array[0],location)
     @restaurants = results["restaurants"]
   end
   erb :search_result
@@ -262,12 +265,15 @@ end
 
 post '/chowdown' do
   user_search = params[:search_input]
+  location = params[:longnlat].gsub(" ","&&")
   remove_non_alpha_chars = user_search.downcase.gsub(/[^a-z0-9\s]/i, '')
   input_string = remove_non_alpha_chars.gsub(' ','%20')
+  empty_query = "chowdown"+"&&"+location
+  normal_query = input_string + "&&" +location
   if user_search == ""
-    redirect '/result/chowdown'
+    redirect "/result/#{empty_query}"
   elsif user_search != nil && user_search != ""
-    redirect "/result/#{input_string}"
+    redirect "/result/#{normal_query}"
   else
     erb :index
   end
