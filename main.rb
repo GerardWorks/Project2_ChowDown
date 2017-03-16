@@ -1,6 +1,6 @@
-# require 'pry'
+require 'pry'
 require 'sinatra'
-# require 'sinatra/reloader'
+require 'sinatra/reloader'
 require 'pg'
 require 'httparty'
 require_relative 'database_config'
@@ -35,9 +35,8 @@ helpers do
 
   def random_user location
     found_user = User.where(city: location).sample
-
     if found_user == nil
-      return random_user
+      return User.all.sample.id
     else
       return found_user.id
     end
