@@ -1,1 +1,45 @@
-<%= @restaurants %>
+<div class="container">
+  <div class="row">
+    <div class="jumbotron">
+      <h3 class="text-center">KEEP CALM</h3>
+      <h5 class="text-center">AND</h5>
+      <h1 class="text-center title">Chow Down</h1>
+      <form class="" action="/chowdown" method="post">
+        <div class="form-group text-center">
+          <input type="text" class="form-control" name="search_input" value="" placeholder="Search">
+          <p></p>
+          <button class="btn btn-lg btn-danger">I'm ready to Chow Down</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <% if @restaurants.length != 0 %>
+    <% for i in 0..@restaurants.length - 1 %>
+    <div class="well well-lg">
+      <div class="row spacer">
+         <div class="col-md-6">
+           <img src=<%=@restaurants[i]["restaurant"]["thumb"]%> alt="Restaurant Image" class="img img-responsive">
+         </div>
+         <div class="col-md-6">
+           <h2 class="no_padding"><%= @restaurants[i]["restaurant"]["name"] %></h2>
+           <p>Cuisine: <%= @restaurants[i]["restaurant"]["cuisines"] %></p>
+           <p>Average Cost for 2: $<%= @restaurants[i]["restaurant"]["average_cost_for_two"] %>.00</p>
+           <p>Location: <%= @restaurants[i]["restaurant"]["location"]["address"] %></p>
+           <p>City: <%= @restaurants[i]["restaurant"]["location"]["city"]%>, <%=@restaurants[i]["restaurant"]["location"]["zipcode"]%> </p>
+           <p>Chow Down Rating: <%= rating_search(@restaurants[i]["restaurant"]["name"]) %> /10</p>
+           <p>Zomato Rating: <%= @restaurants[i]["restaurant"]["user_rating"]["aggregate_rating"] %>/5</p>
+           <p>Users Rating: <%= @restaurants[i]["restaurant"]["user_rating"]["rating_text"] %></p>
+         </div>
+       </div>
+     </div>
+    <% end %>
+  <% else %>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-12 text-center">
+          <h2>Sorry No Results for <%= @string %></h2>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

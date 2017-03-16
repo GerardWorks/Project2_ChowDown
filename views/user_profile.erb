@@ -1,0 +1,51 @@
+<div class="container">
+  <form class="" action="/user/update" method="post">
+    <input type="hidden" name="_method" value="put">
+    <div class="form-group">
+      <% @session.attributes.each do |key,value| %>
+        <div class="row">
+          <div class="col-md-4">
+          </div>
+            <div class="col-md-4">
+              <div class="well well-lg">
+              <% if key != 'id' && key != 'password_digest' && key != 'points' %>
+                <h5><%= key.capitalize.gsub(/[^a-z0-9\s]/i, ' ')%></h5>
+                <p>Current value: <%=value%></p>
+                <input type="text" class="form-control" name=<%= key%> placeholder=<%= key.capitalize.gsub(/[^a-z0-9\s]/i, ' ')%> value="<%=value%>">
+              <% end %>
+            </div>
+          </div>
+          <div class="col-md-4">
+          </div>
+        </div>
+      <% end %>
+        <div class="row">
+          <div class="col-md-4">
+          </div>
+          <div class="col-md-4">
+            <div class="well well-lg">
+              <h5>Update Password</h5>
+              <input type="password" class="form-control" name='new_password' placeholder="New Password">
+            </div>
+          </div>
+          <div class="col-md-4">
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-4">
+          </div>
+          <div class="col-md-4">
+            <div class="well well-lg">
+              <h5>Current Password</h5>
+              <input type="password" class="form-control" name='current_password' placeholder="Current Password">
+            </div>
+          </div>
+          <div class="col-md-4">
+          </div>
+        </div>
+      </div>
+      <div class="row text-center">
+        <button class="btn btn-default">Update Details</button>
+      </div>
+  </form>
+</div>

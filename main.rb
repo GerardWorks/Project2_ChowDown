@@ -142,6 +142,21 @@ helpers do
     end
   end
 
+  def rating_search name
+    restaurant = restaurant_db_search(name)
+    rating_sum = 0
+    if restaurant != nil
+      comments_length = restaurant.comments.length
+      for i in 0..comments_length -1
+        rating_sum += restaurant.comments[i].rating
+      end
+      average_rating = rating_sum/comments_length
+      return average_rating
+    else
+      return "Currently no ratings with us"
+    end
+  end
+
   def geolocation
     location = HTTParty.post("https://www.googleapis.com/geolocation/v1/geolocate?key=AIzaSyDymhDvUDW4UO33LK-BRymut6RoM_pG4eI")
     lat = location['location']['lat']
@@ -171,13 +186,9 @@ get '/' do
 end
 
 get '/result/:id' do
-  string = params[:id]
-  results = general_search(string)
+  @string = params[:id]
+  results = general_search(@string)
   @restaurants = results["restaurants"]
-  # ["restaurant"]["name"]
-  binding.pry
-
-
   erb :search_result
 end
 
@@ -381,4 +392,52 @@ post '/comment/submit/:id' do
   body = params[:body]
   create_comment(params[:id],user_id,restaurant_id,rating,body)
   redirect '/user/portal'
+end
+
+get '/user/edit' do
+  @session = current_user
+  erb :user_profile
+end
+
+put '/user/update' do
+  session_user = current_user
+  if session_user && session_user.authenticate(params[:current_password])
+    session_user.first_name = params[:first_name]
+    session_user.last_name = params[:last_name]
+    session_user.date_of_birth = params[:date_of_birth]
+    session_user.email = params[:email]
+    session_user.mobile = params[:mobile]
+    session_user.address = params[:address]
+    session_user.suburb = params[:suburb]
+    session_user.city = params[:city]
+    session_user.password = params[:new_password]
+    session_user.save
+    redirect '/user/portal'
+  else
+    redirect '/user/edit'
+  end
+end
+
+get '/restaurant/edit' do
+  @session = current_user_restaurant
+  erb :restaurant_profile
+end
+
+put '/restaurant/update' do
+  session_user = current_user_restaurant
+  if session_user && session_user.authenticate(params[:current_password])
+    session_user.first_name = params[:first_name]
+    session_user.last_name = params[:last_name]
+    session_user.restaurant_name = params[:restaurant_name]
+    session_user.email = params[:email]
+    session_user.mobile = params[:mobile]
+    session_user.address = params[:address]
+    session_user.suburb = params[:suburb]
+    session_user.city = params[:city]
+    session_user.password = params[:new_password]
+    session_user.save
+    redirect '/restaurant/portal'
+  else
+    redirect '/restaurant/edit'
+  end
 end

@@ -1,0 +1,13 @@
+div.spacer{
+  margin-bottom: 2em;
+}
+h2.no_padding{
+  padding-top: 0;
+  margin-top: 0;
+}
+h1.title{
+  font-family: 'Kaushan Script', cursive;
+}
+body{
+  background-image: url(/images/background.jpg);
+}
