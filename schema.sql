@@ -64,7 +64,7 @@ CREATE TABLE discount_codes(
   id SERIAL4 PRIMARY KEY,
   restaurant_id INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
-  code VARCHAR(200) NOT NULL,
+  code INTEGER NOT NULL,
   claim VARCHAR(200) NOT NULL
 );
 
