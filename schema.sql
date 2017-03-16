@@ -39,7 +39,8 @@ CREATE TABLE invitations(
   user_id INTEGER NOT NULL,
   restaurant_id INTEGER NOT NULL,
   time_start VARCHAR(200) NOT NULL,
-  time_end VARCHAR(200) NOT NULL
+  time_end VARCHAR(200) NOT NULL,
+  discount_code_id INTEGER NOT NULL
 );
 
 CREATE TABLE open_promos(
@@ -63,7 +64,8 @@ CREATE TABLE discount_codes(
   id SERIAL4 PRIMARY KEY,
   restaurant_id INTEGER NOT NULL,
   user_id INTEGER NOT NULL,
-  code VARCHAR(200) NOT NULL
+  code VARCHAR(200) NOT NULL,
+  claim VARCHAR(200) NOT NULL
 );
 
 CREATE TABLE bookings(
@@ -72,5 +74,7 @@ CREATE TABLE bookings(
   user_id INTEGER NOT NULL,
   code_id INTEGER,
   booking_date VARCHAR(200) NOT NULL,
-  booking_time VARCHAR(200) NOT NULL
+  booking_time VARCHAR(200) NOT NULL,
+  confirmation VARCHAR(200) NOT NULL,
+  person INTEGER NOT NULL
 );

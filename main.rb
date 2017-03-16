@@ -164,9 +164,12 @@ helpers do
     return [lat,long]
   end
 
-  def search (location_array, radius = 1000)
+  def search (query, location_array, radius = 2000)
+    search = HTTParty.post("https://developers.zomato.com/api/v2.1/search?q=#{query}&lat=#{location_array[0]}&lon=#{location_array[1]}&radius=#{radius}", :headers => {"X-Zomato-API-Key" => "f4909ceb3554accebfc6de98eeac1b7a"})
+  end
+
+  def search_my_area (location_array, radius = 2000)
     search = HTTParty.post("https://developers.zomato.com/api/v2.1/search?lat=#{location_array[0]}&lon=#{location_array[1]}&radius=#{radius}", :headers => {"X-Zomato-API-Key" => "f4909ceb3554accebfc6de98eeac1b7a"})
-    return @search.body
   end
 
   def general_search (words)
@@ -175,7 +178,6 @@ helpers do
 
   def locationQuery cityname
     food = HTTParty.post("https://developers.zomato.com/api/v2.1/locations?query=#{cityname}", :headers => {"X-Zomato-API-Key" => "f4909ceb3554accebfc6de98eeac1b7a"})
-    return food
   end
 end
 
@@ -187,8 +189,14 @@ end
 
 get '/result/:id' do
   @string = params[:id]
-  results = general_search(@string)
-  @restaurants = results["restaurants"]
+  location = geolocation
+  if @string == 'chowdown'
+    results = search_my_area(location)
+    @restaurants = results["restaurants"]
+  else
+    results = search(@string,location)
+    @restaurants = results["restaurants"]
+  end
   erb :search_result
 end
 
@@ -256,8 +264,9 @@ post '/chowdown' do
   user_search = params[:search_input]
   remove_non_alpha_chars = user_search.downcase.gsub(/[^a-z0-9\s]/i, '')
   input_string = remove_non_alpha_chars.gsub(' ','%20')
-
-  if user_search != nil && user_search != ""
+  if user_search == ""
+    redirect '/result/chowdown'
+  elsif user_search != nil && user_search != ""
     redirect "/result/#{input_string}"
   else
     erb :index
