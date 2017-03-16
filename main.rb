@@ -42,6 +42,16 @@ helpers do
     end
   end
 
+  def discount_generator user_id,rest_id
+    discount = DiscountCode.new
+    discount.restaurant_id = rest_id
+    discount.user_id = user_id
+    discount.code = rand(123456..654321)
+    discount.claim = "false"
+    discount.save
+    return discount
+  end
+
   def invitations invitation_comment,owner_id,days_valid,date
     owner_location = Restaurant.find(owner_id).city
     invite = Invitation.new
@@ -56,16 +66,6 @@ helpers do
     invite.save
   end
   
-  def discount_generator user_id,rest_id
-    discount = DiscountCode.new
-    discount.restaurant_id = rest_id
-    discount.user_id = user_id
-    discount.code = rand(123456..654321)
-    discount.claim = "false"
-    discount.save
-    return discount
-  end
-
   def date_now
     day = Time.now.day
     month = Time.now.month
