@@ -1,6 +1,6 @@
-# require 'pry'
+require 'pry'
 require 'sinatra'
-# require 'sinatra/reloader'
+require 'sinatra/reloader'
 require 'pg'
 require 'httparty'
 require_relative 'database_config'
@@ -18,7 +18,7 @@ enable :sessions
 helpers do
 # area for methods
   def current_user_restaurant
-    Restaurant.find_by(id: session[:user_id])
+    Restaurant.find_by(email: session[:user_id])
   end
 
   def logged_in_restaurant?
@@ -26,7 +26,7 @@ helpers do
   end
 
   def current_user
-    User.find_by(id: session[:user_id])
+    User.find_by(email: session[:user_id])
   end
 
   def logged_in?
@@ -240,7 +240,7 @@ post '/session' do
   if selector == "user"
     user = User.find_by(email: params[:email])
     if user && user.authenticate(params[:password])
-      session[:user_id] = user.id
+      session[:user_id] = user.email
       redirect '/'
     else
       erb :index
@@ -248,7 +248,7 @@ post '/session' do
   elsif selector == "restaurant"
     user = Restaurant.find_by(email: params[:email])
     if user && user.authenticate(params[:password])
-      session[:user_id] = user.id
+      session[:user_id] = user.email
       redirect '/'
     else
       erb :index
@@ -282,7 +282,7 @@ end
 post '/user/registration/new' do
   password1 = params[:password]
   password2 = params[:password_check]
-  if password1 == password2
+  if password1 == password2 && password1 != "" && password2 != ""
     new_user = User.new
     new_user.first_name = params[:first_name]
     new_user.last_name = params[:last_name]
@@ -305,18 +305,18 @@ end
 post '/restaurant/registration/new' do
   password1 = params[:password]
   password2 = params[:password_check]
-  if password1 == password2
-    new_user = Restaurant.new
-    new_user.first_name = params[:first_name]
-    new_user.last_name = params[:last_name]
-    new_user.email = params[:email]
-    new_user.mobile = params[:mobile]
-    new_user.restaurant_name = params[:restaurant_name]
-    new_user.address = params[:address]
-    new_user.suburb = params[:suburb]
-    new_user.city = params[:city]
-    new_user.password = params[:password]
-    new_user.save
+  if password1 == password2 && password1 != "" && password2 != ""
+    new_rest = Restaurant.new
+    new_rest.first_name = params[:first_name]
+    new_rest.last_name = params[:last_name]
+    new_rest.email = params[:email]
+    new_rest.mobile = params[:mobile]
+    new_rest.restaurant_name = params[:restaurant_name]
+    new_rest.address = params[:address]
+    new_rest.suburb = params[:suburb]
+    new_rest.city = params[:city]
+    new_rest.password = params[:password]
+    new_rest.save
     redirect '/'
   else
     @comment = "Your password is incorrect"
