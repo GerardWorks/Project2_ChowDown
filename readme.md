@@ -9,6 +9,7 @@
 - Ruby
 - Ruby on Rails
 - PostgreSQL
+
 Link to App on Heroku:
 
 [Chow Down App](https://infinite-beach-40983.herokuapp.com)
