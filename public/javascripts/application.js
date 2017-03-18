@@ -1,9 +1,9 @@
 $(window).ready(function(){
-    initiate_geolocation();
+  initiate_geolocation();
 });
 
 function initiate_geolocation() {
-    navigator.geolocation.getCurrentPosition(handle_geolocation_query);
+  navigator.geolocation.getCurrentPosition(handle_geolocation_query);
 }
 
 function handle_geolocation_query(position){
